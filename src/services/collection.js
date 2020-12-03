@@ -91,7 +91,8 @@ async function hydrateRelated(entity, schema) {
     if (schema[name].type === "related") {
       const ids = entity?.values?.[name] ?? [];
       if (ids.length === 0) continue;
-      entity.values[name] = await getRelated(schema[name].collection, ids);
+      const related = await getRelated(schema[name].collection, ids);
+      entity.values[name] = related.filter((item) => item !== null);
     }
   }
 }
