@@ -1,5 +1,6 @@
 # Generate
 node_modules/
+.eslintcache
 
 # MacOS
 .DS_Store

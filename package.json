@@ -1,15 +1,36 @@
 {
   "private": true,
   "scripts": {
-    "dev": "npx nodemon --watch src/server src/server/run.js",
-    "start": "node src/server/run.js"
+    "server-dev": "npx nodemon --watch src/server src/server/run.js",
+    "server-start": "node src/server/run.js",
+    "build": "npx react-scripts build",
+    "start": "npx react-scripts start"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all",
+      "ie 11"
+    ],
+    "development": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all",
+      "ie 11"
+    ]
   },
   "dependencies": {
     "body-parser": "^1.19.0",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-router-dom": "^5.2.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.6",
-    "prettier": "^2.2.1"
+    "prettier": "^2.2.1",
+    "react-scripts": "^4.0.1",
+    "sass": "^1.29.0"
   }
 }
