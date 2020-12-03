@@ -2,12 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const config = require("../configs/server");
 
-const DB_FILE = path.resolve(
-  __dirname,
-  "..",
-  "..",
-  ...config.dbFile.split("/")
-);
+const DB_FILE = path.join(config.paths.base, ...config.dbFile.split("/"));
 const COLLECTION_SCHEMAS = {};
 
 async function read() {
