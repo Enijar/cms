@@ -1,5 +1,6 @@
-# Generate
+# Generated
 node_modules/
+build/
 .eslintcache
 
 # MacOS
@@ -7,3 +8,6 @@ node_modules/
 
 # Developer environment
 .idea/
+
+# Secrets
+.env
