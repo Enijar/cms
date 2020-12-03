@@ -2,13 +2,19 @@ const fs = require("fs");
 const path = require("path");
 const config = require("../configs/server");
 
-const dbFile = path.resolve(__dirname, "..", "..", ...config.dbFile.split("/"));
+const DB_FILE = path.resolve(
+  __dirname,
+  "..",
+  "..",
+  ...config.dbFile.split("/")
+);
+const COLLECTION_SCHEMAS = {};
 
 async function read() {
-  if (!fs.existsSync(dbFile)) {
-    fs.writeFileSync(dbFile, JSON.stringify({}, null, 2), "utf8");
+  if (!fs.existsSync(DB_FILE)) {
+    fs.writeFileSync(DB_FILE, JSON.stringify({}, null, 2), "utf8");
   }
-  return JSON.parse(fs.readFileSync(dbFile, "utf8"));
+  return JSON.parse(fs.readFileSync(DB_FILE, "utf8"));
 }
 
 async function write(collection, entity, { schema, mode }) {
@@ -16,10 +22,13 @@ async function write(collection, entity, { schema, mode }) {
   let { entities = [], nextId = 1 } = collections?.[collection] ?? {};
   let savedEntity = null;
 
-  // Remove properties that are not in the schema
+  // Remove props that are not in the schema
+  const internalProps = ["id"];
   if (["create", "update"].includes(mode)) {
     for (const name in entity) {
-      if (!entity.hasOwnProperty(name)) continue;
+      if (!entity.hasOwnProperty(name) || internalProps.includes(name)) {
+        continue;
+      }
       if (!schema.hasOwnProperty(name)) {
         delete entity[name];
       }
@@ -40,11 +49,12 @@ async function write(collection, entity, { schema, mode }) {
 
   if (mode === "update") {
     for (let i = 0, length = entities.length; i < length; i++) {
-      if (entities[i]?.id !== entity.id) continue;
-      const { values = {} } = entities[i] ?? {};
-      entities[i].values = { ...values };
-      savedEntity = { ...entities[i].values };
-      break;
+      if (entities[i]?.values?.id === entity?.id) {
+        const { values = {} } = entities[i] ?? {};
+        entities[i].values = { ...values, ...entity };
+        savedEntity = { ...entities[i].values };
+        break;
+      }
     }
   }
 
@@ -58,7 +68,7 @@ async function write(collection, entity, { schema, mode }) {
   }
 
   fs.writeFileSync(
-    dbFile,
+    DB_FILE,
     JSON.stringify(
       { ...collections, [collection]: { nextId, schema, entities } },
       null,
@@ -70,20 +80,37 @@ async function write(collection, entity, { schema, mode }) {
   return savedEntity;
 }
 
+async function getRelated(name, ids) {
+  const schema = COLLECTION_SCHEMAS[name] ?? {};
+  return Promise.all(ids.map((id) => find(name, schema, id)));
+}
+
+async function find(name, schema, id) {
+  const collections = await read();
+  const { entities = [] } = collections?.[name] ?? {};
+  const entity = entities.find((entity) => {
+    return entity?.values?.id === id;
+  });
+  if (!entity) return null;
+  // Hydrate related fields
+  for (const name in schema) {
+    if (!schema.hasOwnProperty(name)) continue;
+    if (schema[name].type === "related") {
+      const ids = entity?.values?.[name] ?? [];
+      if (ids.length === 0) continue;
+      entity.values[name] = await getRelated(schema[name].collection, ids);
+    }
+  }
+  return entity?.values ?? null;
+}
+
 module.exports = {
   createCollection(name, schema) {
+    COLLECTION_SCHEMAS[name] = schema;
+
     return {
       async find(id) {
-        const collections = await read();
-        const { entities = [] } = collections?.[name] ?? {};
-        const entity =
-          entities.find((entity) => {
-            return entity?.values?.id === id;
-          }) ?? null;
-        if (entity === null) {
-          return null;
-        }
-        return entity?.values ?? null;
+        return find(name, schema, id);
       },
 
       async all() {
