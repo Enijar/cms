@@ -1,5 +1,5 @@
-const collections = require("../config/collections");
-const { createCollection } = require("./services/collection");
+const collections = require("../../config/collections");
+const { createCollection } = require("./collection");
 
 const createdCollections = {};
 

@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const config = require("../../config/server");
+const config = require("../config");
 
 const DB_FILE = path.join(config.paths.base, ...config.dbFile.split("/"));
 const SCHEMAS = {};
