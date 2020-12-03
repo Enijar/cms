@@ -85,14 +85,7 @@ async function getRelated(name, ids) {
   return Promise.all(ids.map((id) => find(name, schema, id)));
 }
 
-async function find(name, schema, id) {
-  const collections = await read();
-  const { entities = [] } = collections?.[name] ?? {};
-  const entity = entities.find((entity) => {
-    return entity?.values?.id === id;
-  });
-  if (!entity) return null;
-  // Hydrate related fields
+async function hydrateRelated(entity, schema) {
   for (const name in schema) {
     if (!schema.hasOwnProperty(name)) continue;
     if (schema[name].type === "related") {
@@ -101,6 +94,16 @@ async function find(name, schema, id) {
       entity.values[name] = await getRelated(schema[name].collection, ids);
     }
   }
+}
+
+async function find(name, schema, id) {
+  const collections = await read();
+  const { entities = [] } = collections?.[name] ?? {};
+  const entity = entities.find((entity) => {
+    return entity?.values?.id === id;
+  });
+  if (!entity) return null;
+  await hydrateRelated(entity, schema);
   return entity?.values ?? null;
 }
 
@@ -118,18 +121,7 @@ module.exports = {
         const { entities = [] } = collections?.[name] ?? {};
         return Promise.all(
           entities.map(async (entity) => {
-            // Hydrate related fields
-            for (const name in schema) {
-              if (!schema.hasOwnProperty(name)) continue;
-              if (schema[name].type === "related") {
-                const ids = entity?.values?.[name] ?? [];
-                if (ids.length === 0) continue;
-                entity.values[name] = await getRelated(
-                  schema[name].collection,
-                  ids
-                );
-              }
-            }
+            await hydrateRelated(entity, schema);
             return entity?.values ?? {};
           })
         );
