@@ -1,9 +1,9 @@
 const fs = require("fs");
 const path = require("path");
-const config = require("../configs/server");
+const config = require("../../config/server");
 
 const DB_FILE = path.join(config.paths.base, ...config.dbFile.split("/"));
-const COLLECTION_SCHEMAS = {};
+const SCHEMAS = {};
 
 async function read() {
   if (!fs.existsSync(DB_FILE)) {
@@ -76,7 +76,7 @@ async function write(collection, entity, { schema, mode }) {
 }
 
 async function getRelated(name, ids) {
-  const schema = COLLECTION_SCHEMAS[name] ?? {};
+  const schema = SCHEMAS[name] ?? {};
   return Promise.all(ids.map((id) => find(name, schema, id)));
 }
 
@@ -105,7 +105,7 @@ async function find(name, schema, id) {
 
 module.exports = {
   createCollection(name, schema) {
-    COLLECTION_SCHEMAS[name] = schema;
+    SCHEMAS[name] = schema;
 
     return {
       async find(id) {

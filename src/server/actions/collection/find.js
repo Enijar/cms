@@ -1,4 +1,4 @@
-const collections = require("../../data/collections");
+const collections = require("../../collections");
 
 module.exports = async function collectionFind(req, res) {
   const { collection, id } = req?.params ?? {};

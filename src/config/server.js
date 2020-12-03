@@ -1,6 +1,6 @@
 const path = require("path");
 
-const basePath = path.resolve(__dirname, "..", "..", "..");
+const basePath = path.resolve(__dirname, "..", "..");
 
 module.exports = {
   port: process?.env?.PORT ?? 3000,
