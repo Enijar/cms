@@ -116,9 +116,23 @@ module.exports = {
       async all() {
         const collections = await read();
         const { entities = [] } = collections?.[name] ?? {};
-        return entities.map((entity) => {
-          return entity?.values ?? {};
-        });
+        return Promise.all(
+          entities.map(async (entity) => {
+            // Hydrate related fields
+            for (const name in schema) {
+              if (!schema.hasOwnProperty(name)) continue;
+              if (schema[name].type === "related") {
+                const ids = entity?.values?.[name] ?? [];
+                if (ids.length === 0) continue;
+                entity.values[name] = await getRelated(
+                  schema[name].collection,
+                  ids
+                );
+              }
+            }
+            return entity?.values ?? {};
+          })
+        );
       },
 
       async create(entity) {
