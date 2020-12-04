@@ -4,14 +4,15 @@ const config = require("../config");
 
 const DB_FILE = path.join(config.paths.base, ...config.dbFile.split("/"));
 
-module.exports = {
-  async read() {
-    if (!fs.existsSync(DB_FILE)) {
-      fs.writeFileSync(DB_FILE, JSON.stringify({}, null, 2), "utf8");
-    }
-    return JSON.parse(fs.readFileSync(DB_FILE, "utf8"));
-  },
+async function read() {
+  if (!fs.existsSync(DB_FILE)) {
+    fs.writeFileSync(DB_FILE, JSON.stringify({}, null, 2), "utf8");
+  }
+  return JSON.parse(fs.readFileSync(DB_FILE, "utf8"));
+}
 
+module.exports = {
+  read,
   async write(collection, entity, { schema, mode }) {
     const collections = await read();
     let { entities = [], nextId = 1 } = collections?.[collection] ?? {};
