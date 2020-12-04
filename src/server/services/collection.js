@@ -1,3 +1,4 @@
+const { createModel } = require("use-model-validation");
 const database = require("./database");
 
 const SCHEMAS = {};
@@ -34,7 +35,16 @@ module.exports = {
   createCollection(name, schema) {
     SCHEMAS[name] = schema;
 
+    const rules = {};
+    for (const field in schema) {
+      if (!schema.hasOwnProperty(field)) continue;
+      if (schema[field].hasOwnProperty("rules")) {
+        rules[field] = schema[field].rules;
+      }
+    }
+
     return {
+      model: createModel({ rules }),
       async find(id) {
         return find(name, schema, id);
       },
