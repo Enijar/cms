@@ -1,11 +1,11 @@
-const collections = require("../../config/collections");
+const schema = require("../../config/schema");
 const { createCollection } = require("./collection");
 
-const createdCollections = {};
+const collections = {};
 
-for (const name in collections) {
-  if (!collections.hasOwnProperty(name)) continue;
-  createdCollections[name] = createCollection(name, collections[name]);
+for (const name in schema) {
+  if (!schema.hasOwnProperty(name)) continue;
+  collections[name] = createCollection(name, schema[name].fields);
 }
 
-module.exports = createdCollections;
+module.exports = collections;
