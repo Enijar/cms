@@ -1,4 +1,5 @@
 import React from "react";
+import "./home.scss";
 import Page from "../../components/page/page";
 
 export default function Home() {
