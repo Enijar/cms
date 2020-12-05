@@ -1,29 +1,34 @@
 import React from "react";
 import "./data.scss";
-import fields from "./fields/fields";
+import config from "./config";
 
-const DataContext = React.useContext({});
+export const DataContext = React.createContext({});
 
-function Provider({ children }) {
-  const [data, setData] = React.useState();
+export default function Data({ onChange, fields = [] }) {
+  const [data, setData] = React.useState({});
 
   const setField = React.useCallback((name, value) => {
     setData((data) => ({ ...data, [name]: value }));
   }, []);
 
+  React.useEffect(() => {
+    if (onChange) {
+      onChange(data);
+    }
+  }, [onChange, data]);
+
   return (
     <DataContext.Provider value={{ data, setField }}>
-      {children}
+      <div className="data">
+        {fields.map((field, index) => {
+          if (!config.fields.hasOwnProperty(field.type)) {
+            console.warn(`No component for type "${field.type}"`);
+            return null;
+          }
+          const { Component } = config.fields[field.type];
+          return <Component key={index} name={field.name} {...field.props} />;
+        })}
+      </div>
     </DataContext.Provider>
-  );
-}
-
-export { fields, DataContext };
-
-export default function Data({ children }) {
-  return (
-    <Provider>
-      <div className="data">{children}</div>
-    </Provider>
   );
 }

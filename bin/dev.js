@@ -3,7 +3,7 @@ const concurrently = require("concurrently");
 
 concurrently(
   [
-    "npx nodemon --watch src/server src/server/run.js",
+    "npx nodemon --watch src/server --watch src/config src/server/run.js",
     "npx react-scripts start",
   ],
   {

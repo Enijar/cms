@@ -4,11 +4,8 @@
   box-sizing: border-box;
   font-family: inherit;
   font-size: inherit;
-  font-weight: inherit;
   line-height: inherit;
   color: inherit;
-  padding: 0;
-  margin: 0;
 }
 
 html,
@@ -17,6 +14,8 @@ body,
 .page {
   height: 100%;
   overflow: hidden;
+  padding: 0;
+  margin: 0;
 }
 
 a {
