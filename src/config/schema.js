@@ -6,6 +6,7 @@ module.exports = {
       title: {
         type: "text",
         rules: [R.required(), R.max(255)],
+        listable: true,
       },
       description: {
         type: "richText",
@@ -22,6 +23,7 @@ module.exports = {
       title: {
         type: "text",
         rules: [R.required(), R.max(255)],
+        listable: true,
       },
       content: {
         type: "richText",
@@ -38,6 +40,7 @@ module.exports = {
       name: {
         type: "text",
         rules: [R.required(), R.max(255)],
+        listable: true,
       },
     },
   },

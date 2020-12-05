@@ -1,0 +1,38 @@
+.list {
+  margin-bottom: 1em;
+
+  table {
+    width: 100%;
+    box-shadow: #e3e9f3 0 2px 4px;
+    table-layout: fixed;
+    border-radius: 3px;
+
+    td {
+      padding: 0.25em 0.5em;
+    }
+
+    thead tr {
+      background-color: #f3f3f3;
+      font-weight: bold;
+    }
+
+    tbody {
+      td {
+        padding: 0.5em;
+        border-bottom: 1px solid #f1f1f2;
+      }
+
+      tr {
+        cursor: pointer;
+
+        &:last-child td {
+          border-bottom: none;
+        }
+
+        &:hover {
+          background-color: #f7f8f8;
+        }
+      }
+    }
+  }
+}
